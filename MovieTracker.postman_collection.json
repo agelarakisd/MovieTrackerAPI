@@ -1,0 +1,815 @@
+{
+  "info": {
+    "name": "MovieTracker API - Complete Collection",
+    "description": "Production-ready API collection with 16 endpoints including soft delete functionality",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_postman_id": "movietracker-api-collection-v2",
+    "version": "2.0.0"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5076/api",
+      "type": "string"
+    },
+    {
+      "key": "accessToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "refreshToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "userId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "movieId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "seriesId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "episodeId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "🔐 Authentication",
+      "description": "User registration, login, and token refresh endpoints",
+      "item": [
+        {
+          "name": "Register New User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('accessToken', jsonData.data.accessToken);",
+                  "    pm.collectionVariables.set('refreshToken', jsonData.data.refreshToken);",
+                  "    pm.collectionVariables.set('userId', jsonData.data.userId);",
+                  "    console.log('✅ Tokens saved automatically');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/Auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["Auth", "register"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"testuser\",\n  \"email\": \"test@example.com\",\n  \"password\": \"Test123!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Creates a new user account and returns access + refresh tokens"
+          },
+          "response": []
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('accessToken', jsonData.data.accessToken);",
+                  "    pm.collectionVariables.set('refreshToken', jsonData.data.refreshToken);",
+                  "    pm.collectionVariables.set('userId', jsonData.data.userId);",
+                  "    console.log('✅ Tokens saved automatically');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/Auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["Auth", "login"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"testuser\",\n  \"password\": \"Test123!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Authenticates user and returns JWT tokens (access: 15min, refresh: 7days)"
+          },
+          "response": []
+        },
+        {
+          "name": "Refresh Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('accessToken', jsonData.data.accessToken);",
+                  "    pm.collectionVariables.set('refreshToken', jsonData.data.refreshToken);",
+                  "    console.log('✅ New tokens saved! Old refresh token revoked.');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/Auth/refresh",
+              "host": ["{{baseUrl}}"],
+              "path": ["Auth", "refresh"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Exchanges refresh token for new access + refresh tokens (one-time use, auto-revokes old token)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "🔍 Search",
+      "description": "Search TMDB database for movies and series",
+      "item": [
+        {
+          "name": "Search Movies",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/Search/movies?query=inception",
+              "host": ["{{baseUrl}}"],
+              "path": ["Search", "movies"],
+              "query": [
+                {
+                  "key": "query",
+                  "value": "inception",
+                  "description": "Search term"
+                }
+              ]
+            },
+            "description": "Search TMDB for movies by title (returns top 10 results with posters, backdrops, release dates)"
+          },
+          "response": []
+        },
+        {
+          "name": "Search Series",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/Search/series?query=breaking bad",
+              "host": ["{{baseUrl}}"],
+              "path": ["Search", "series"],
+              "query": [
+                {
+                  "key": "query",
+                  "value": "breaking bad",
+                  "description": "Search term"
+                }
+              ]
+            },
+            "description": "Search TMDB for TV series by title (returns top 10 results)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "🎬 Movies",
+      "description": "Manage personal movie watchlist",
+      "item": [
+        {
+          "name": "Add Movie to Watchlist",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('movieId', jsonData.data.id);",
+                  "    console.log('✅ Movie ID saved:', jsonData.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/Movies",
+              "host": ["{{baseUrl}}"],
+              "path": ["Movies"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tmdbId\": 27205\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Adds movie to watchlist (auto-fetches metadata from TMDB). Example: Inception = 27205. If previously deleted, restores it."
+          },
+          "response": []
+        },
+        {
+          "name": "Get All My Movies",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/Movies",
+              "host": ["{{baseUrl}}"],
+              "path": ["Movies"]
+            },
+            "description": "Retrieves all movies in your watchlist (sorted by newest first, excludes soft-deleted)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Watched Movies Only",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/Movies?isWatched=true",
+              "host": ["{{baseUrl}}"],
+              "path": ["Movies"],
+              "query": [
+                {
+                  "key": "isWatched",
+                  "value": "true",
+                  "description": "Filter: true=watched, false=unwatched, omit=all"
+                }
+              ]
+            },
+            "description": "Retrieves only watched movies"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Unwatched Movies Only",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/Movies?isWatched=false",
+              "host": ["{{baseUrl}}"],
+              "path": ["Movies"],
+              "query": [
+                {
+                  "key": "isWatched",
+                  "value": "false"
+                }
+              ]
+            },
+            "description": "Retrieves only unwatched movies"
+          },
+          "response": []
+        },
+        {
+          "name": "Mark Movie as Watched",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/Movies/{{movieId}}/watched",
+              "host": ["{{baseUrl}}"],
+              "path": ["Movies", "{{movieId}}", "watched"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"isWatched\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Marks movie as watched (records timestamp)"
+          },
+          "response": []
+        },
+        {
+          "name": "Mark Movie as Unwatched",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/Movies/{{movieId}}/watched",
+              "host": ["{{baseUrl}}"],
+              "path": ["Movies", "{{movieId}}", "watched"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"isWatched\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Marks movie as unwatched (clears timestamp)"
+          },
+          "response": []
+        },
+        {
+          "name": "Rate Movie",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/Movies/{{movieId}}/rating",
+              "host": ["{{baseUrl}}"],
+              "path": ["Movies", "{{movieId}}", "rating"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rating\": 9.5\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Assigns rating to movie (1.0 - 10.0)"
+          },
+          "response": []
+        },
+        {
+          "name": "Add Notes to Movie",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/Movies/{{movieId}}/notes",
+              "host": ["{{baseUrl}}"],
+              "path": ["Movies", "{{movieId}}", "notes"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"notes\": \"Amazing movie! The plot was mind-blowing and visually stunning.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Adds or updates personal notes (max 1000 characters)"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Movie (Soft Delete)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/Movies/{{movieId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["Movies", "{{movieId}}"]
+            },
+            "description": "⭐ SOFT DELETE: Removes movie from your list (sets IsDeleted=true). Can be restored by re-adding the same movie."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "📺 Series",
+      "description": "Manage TV series with smart episode tracking",
+      "item": [
+        {
+          "name": "Add Series to Watchlist",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('seriesId', jsonData.data.id);",
+                  "    console.log('✅ Series ID saved:', jsonData.data.id);",
+                  "    console.log('📺 Episodes added:', jsonData.message);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/Series",
+              "host": ["{{baseUrl}}"],
+              "path": ["Series"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tmdbId\": 1396\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Adds series + ALL episodes (Breaking Bad = 62 episodes in ~2 seconds!). Example: Breaking Bad = 1396. If previously deleted, restores it with all episodes."
+          },
+          "response": []
+        },
+        {
+          "name": "Get All My Series",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/Series",
+              "host": ["{{baseUrl}}"],
+              "path": ["Series"]
+            },
+            "description": "Retrieves all series in your watchlist (excludes soft-deleted)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Series Episodes with Progress",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.data.episodes && jsonData.data.episodes.length > 0) {",
+                  "        pm.collectionVariables.set('episodeId', jsonData.data.episodes[0].id);",
+                  "        console.log('✅ First episode ID saved:', jsonData.data.episodes[0].id);",
+                  "        console.log('📊 Progress:', jsonData.data.watchedEpisodes + '/' + jsonData.data.totalEpisodes);",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/Series/{{seriesId}}/episodes",
+              "host": ["{{baseUrl}}"],
+              "path": ["Series", "{{seriesId}}", "episodes"]
+            },
+            "description": "Gets all episodes with watch status and progress summary"
+          },
+          "response": []
+        },
+        {
+          "name": "Mark Episode as Watched (Smart)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/Series/episodes/{{episodeId}}/watched",
+              "host": ["{{baseUrl}}"],
+              "path": ["Series", "episodes", "{{episodeId}}", "watched"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"isWatched\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "⭐ SMART MARKING: Marks episode + ALL previous episodes as watched. Example: Mark S02E05 → auto-marks S01 + S02E01-E04 (12 total)"
+          },
+          "response": []
+        },
+        {
+          "name": "Unmark Episode (Single Only)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/Series/episodes/{{episodeId}}/watched",
+              "host": ["{{baseUrl}}"],
+              "path": ["Series", "episodes", "{{episodeId}}", "watched"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"isWatched\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Unmarks ONLY this specific episode (doesn't affect others)"
+          },
+          "response": []
+        },
+        {
+          "name": "Rate Series",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/Series/{{seriesId}}/rating",
+              "host": ["{{baseUrl}}"],
+              "path": ["Series", "{{seriesId}}", "rating"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rating\": 9.5\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Assigns rating to series (1.0 - 10.0)"
+          },
+          "response": []
+        },
+        {
+          "name": "Add Notes to Series",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/Series/{{seriesId}}/notes",
+              "host": ["{{baseUrl}}"],
+              "path": ["Series", "{{seriesId}}", "notes"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"notes\": \"Best series ever! Amazing character development and storytelling.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Adds or updates personal notes (max 1000 characters)"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Series (Soft Delete)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/Series/{{seriesId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["Series", "{{seriesId}}"]
+            },
+            "description": "⭐ SOFT DELETE: Removes series from your list (sets IsDeleted=true). Can be restored by re-adding the same series with all episodes intact."
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  }
+}
