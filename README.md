@@ -75,7 +75,7 @@
 ### 1. Prerequisites
 - [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
 - [Docker Desktop](https://www.docker.com/products/docker-desktop)
-- [TMDB API Key](https://www.themoviedb.org/settings/api) (free)
+
 
 ### 2. Clone & Setup
 ```bash
@@ -106,7 +106,7 @@ dotnet run --project src/MovieTracker.API
 ```
 
 **API**: `http://localhost:5076`  
-**Swagger**: `http://localhost:5076/swagger`
+
 
 ---
 
@@ -776,11 +776,6 @@ docker run -p 5076:5076 movietracker-api
 
 ---
 
-## 📝 License
-
-MIT License - See LICENSE file
-
----
 
 ## 🙏 Credits
 
